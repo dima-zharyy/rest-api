@@ -21,7 +21,7 @@ const getContactById = async (contactId) => {
 const addContact = async (body) => {
   const contacts = await getContacts();
   const id = genId();
-  const newContact = { ...body, id };
+  const newContact = { id, ...body };
   const updatedContacts = [...contacts, newContact];
   const jsonContacts = JSON.stringify(updatedContacts);
 
@@ -47,9 +47,13 @@ const updateContact = async (contactId, body) => {
   const contactToUpdateIndex = contacts.findIndex(
     (item) => item.id === contactId
   );
+
   if (contactToUpdateIndex < 0) return null;
 
-  contacts.splice(contactToUpdateIndex, 1, { contactId, body });
+  contacts.splice(contactToUpdateIndex, 1, { id: contactId, ...body });
+  const jsonContacts = JSON.stringify(contacts);
+
+  await fs.writeFile(contactsPath, jsonContacts);
 
   return contacts[contactToUpdateIndex];
 };
